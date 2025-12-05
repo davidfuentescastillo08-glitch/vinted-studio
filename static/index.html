@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VintedStudio</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="manifest" href="static/manifest.json">
+    <link rel="apple-touch-icon" href="static/icon.png">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+
+<body>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('static/sw.js');
+            });
+        }
+    </script>
+
+    <div class="app-container">
+
+        <!-- Header -->
+        <header>
+            <h1>VintedStudio</h1>
+            <p>Dale vida a tu ropa en un click.</p>
+        </header>
+
+        <!-- Main Action Area -->
+        <main>
+
+            <!-- Intro / Upload State -->
+            <div id="upload-stage" class="stage active">
+                <div class="upload-btn-wrapper">
+                    <button class="btn-main">
+                        <span class="icon">📸</span>
+                        Subir Foto / Tomar Foto
+                    </button>
+                    <input type="file" id="file-input" accept="image/*" capture="environment">
+                </div>
+                <p class="hint">Funciona mejor con buena luz natural.</p>
+            </div>
+
+            <!-- Processing State -->
+            <div id="processing-stage" class="stage">
+                <div class="spinner"></div>
+                <h2>Mejorando...</h2>
+                <p>Quitando fondo y ajustando luz.</p>
+            </div>
+
+            <!-- Result State -->
+            <div id="result-stage" class="stage">
+                <div class="comparison-container" id="comparison-container">
+                    <div class="img-wrapper after">
+                        <img id="img-after" src="" alt="After">
+                        <span class="label">Después</span>
+                    </div>
+                    <div class="img-wrapper before">
+                        <img id="img-before" src="" alt="Before">
+                        <span class="label">Antes</span>
+                    </div>
+                    <div class="handle"></div>
+                    <input type="range" min="0" max="100" value="50" id="slider" class="slider">
+                </div>
+
+                <div class="actions">
+                    <a id="download-btn" class="btn-primary" download="vinted_studio.png">
+                        💾 Guardar en Galería
+                    </a>
+                    <button id="reset-btn" class="btn-secondary">
+                        🔄 Nueva Foto
+                    </button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="static/script.js"></script>
+</body>
+
+</html>

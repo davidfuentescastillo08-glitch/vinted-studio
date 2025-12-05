@@ -1,0 +1,299 @@
+:root {
+    --primary-color: #111;
+    --background-color: #F5F5F5;
+    --accent-color: #0077b6;
+    --text-color: #333;
+    --white: #fff;
+    --shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 480px; /* Mobile width cap */
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    margin-top: 40px;
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+}
+
+header p {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Hide all stages by default, prevent layout shift */
+.stage {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.stage.active {
+    display: flex;
+}
+
+/* Upload Stage */
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+}
+
+.btn-main {
+    background-color: var(--white);
+    color: var(--primary-color);
+    border: 1px solid #ddd;
+    padding: 32px;
+    width: 100%;
+    border-radius: 16px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    transition: transform 0.1s;
+}
+
+.btn-main:active {
+    transform: scale(0.98);
+}
+
+.btn-main .icon {
+    font-size: 40px;
+}
+
+.upload-btn-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.hint {
+    margin-top: 16px;
+    font-size: 12px;
+    color: #999;
+}
+
+/* Processing Stage */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #ddd;
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 24px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Result Stage & Comparison Slider */
+.comparison-container {
+    position: relative;
+    width: 100%;
+    /* Aspect ratio placeholder or calculated in JS. 
+       For now, let height adapt to image, but force a min-height or wrapper */
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+    background: #fff;
+    line-height: 0; /* Removing extra space under img */
+}
+
+.img-wrapper {
+    width: 100%;
+}
+
+.img-wrapper img {
+    width: 100%;
+    display: block;
+}
+
+/* Before image is stacked on top */
+.img-wrapper.before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 50%; /* Initial state handled by JS/CSS width */
+    overflow: hidden;
+    border-right: 2px solid var(--white);
+}
+
+.img-wrapper.before img {
+    /* Critical: Before image needs to maintain original full width aspect */
+    /* We can't just set width 100% of parent because parent is clipped. 
+       We need to size it to the container's width. */
+    width: 100%; /* Relative to .comparison-container? No, relative to wrapper. 
+                  We need detailed JS sizing or clever CSS using object-fit? 
+                  
+                  Actually, simplest way: 
+                  Both images absolute, container takes height.
+                  Before image wrapper width changes.
+    */
+}
+
+/* Refined Comparison Styles */
+.comparison-container {
+    /* Height will be set by JS based on aspect ratio */
+    min-height: 300px; 
+}
+
+.img-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.img-wrapper.before {
+    width: 50%; /* Dynamic */
+    z-index: 2;
+}
+
+.img-wrapper.before img {
+    width: 100%; /* Wait, if wrapper is 50%, img width 100% makes it squished?
+                   NO. If wrapper is 50%, img width should be strictly the width of the CONTAINER. */
+    /* We will handle this in JS by setting specific pixel width to the image 
+       OR using more modern CSS `clip-path` but compatibility...
+       Let's stick to width + object-fit or max-width. */
+}
+
+/* Slider Input */
+.slider {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    z-index: 10;
+    opacity: 0;
+    cursor: ew-resize;
+    height: 100%; /* Cover full area for ease of touch */
+}
+
+/* Handle visual */
+.handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: white;
+    z-index: 5;
+    pointer-events: none;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.handle::after {
+    content: '↔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    background: white;
+    border-radius: 50%;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.label {
+    position: absolute;
+    top: 10px;
+    padding: 4px 8px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    font-size: 12px;
+    border-radius: 4px;
+    z-index: 3;
+}
+.before .label { right: 10px; }
+.after .label { left: 10px; }
+
+.actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: #666;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-weight: 500;
+    width: 100%;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
