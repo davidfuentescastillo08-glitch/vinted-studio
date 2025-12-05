@@ -5,7 +5,7 @@ from rembg import remove, new_session
 from PIL import Image, ImageEnhance, ImageFilter, ImageOps, ImageChops
 
 # Pre-load session to speed up subsequent calls
-session = new_session()
+session = new_session("u2netp")
 
 def process_image(image_bytes):
     """
