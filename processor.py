@@ -4,8 +4,14 @@ import cv2
 from rembg import remove, new_session
 from PIL import Image, ImageEnhance, ImageFilter, ImageOps, ImageChops
 
-# Pre-load session to speed up subsequent calls
-session = new_session("u2netp")
+# Global variable for session (Lazy Loading)
+session = None
+
+def get_session():
+    global session
+    if session is None:
+        session = new_session("u2netp")
+    return session
 
 def process_image(image_bytes):
     """
@@ -22,7 +28,9 @@ def process_image(image_bytes):
     original_size = original_img.size # (W, H)
     
     # 2. Remove Background
-    img_rgba = remove(original_img, session=session) # Returns RGBA
+    # Ensure session is loaded
+    sess = get_session()
+    img_rgba = remove(original_img, session=sess) # Returns RGBA
     
     # 3. Refine Edges (Fix "sticker" look)
     img_refined = refine_edges(img_rgba)
