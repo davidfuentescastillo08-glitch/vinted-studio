@@ -25,6 +25,13 @@ def process_image(image_bytes):
     
     # 1. Load Image
     original_img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    
+    # [OPTIMIZATION] Resize if too big to save RAM (prevent OOM on free tier)
+    # iPhone photos are 3000/4000px, which kills the server. 1500px is enough for Vinted.
+    max_dim = 1500
+    if max(original_img.size) > max_dim:
+        original_img.thumbnail((max_dim, max_dim), Image.Resampling.LANCZOS)
+        
     original_size = original_img.size # (W, H)
     
     # 2. Remove Background
