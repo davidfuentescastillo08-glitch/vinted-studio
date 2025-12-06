@@ -1,4 +1,3 @@
-```python
 import os
 import base64
 from flask import Flask, request, jsonify, send_file, send_from_directory
