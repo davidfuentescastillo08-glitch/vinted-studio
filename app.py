@@ -1,9 +1,13 @@
+```python
 import os
 import base64
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_file, send_from_directory
 from processor import process_image
+from werkzeug.middleware.shared_data import SharedDataMiddleware
+from whitenoise import WhiteNoise
 
 app = Flask(__name__, static_folder='static')
+app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/', prefix='static/') 
 
 # Increase max upload size to 16MB
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
